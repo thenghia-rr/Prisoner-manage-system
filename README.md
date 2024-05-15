@@ -19,15 +19,19 @@ thông tin chi tiết từng luật từ API, lưu luật vào file json
 5. Tìm kiếm thông tin phạm nhân bằng Số CCCD/CMND
 
 ## Đặc tả các trang chính (Pages)
-1. Login page
+#### 1. Login page
 ![](img/login_page.png)
-2. Register page
+
+#### 2. Register page
 ![](img/register_page.png)
-3. Admin page
+
+#### 3. Admin page
 ![](img/admin_page.png)
-4. User page
+
+#### 4. User page
 ![](img/user_page.png)
-5. Laws page
+
+#### 5. Laws page
 ![](img/laws_page.png)
 
 ## Tham khảo (References)
