@@ -192,27 +192,29 @@ class AdminControls:
             with open(file_json_prisoners, "r", encoding="utf-8") as file:
                 # Đọc dữ liệu từ file JSON
                 data = json.load(file)
-
-                # Xóa hết dữ liệu hiện tại trong Treeview
-                self.out.delete(*self.out.get_children())
-
-                # Hiển thị dữ liệu từ JSON lên Treeview
-                for idx, prisoner in enumerate(data, start=1):
-                    self.out.insert("", "end", values=(
-                        idx,
-                        prisoner["fullname"],
-                        prisoner["date_of_birth"],
-                        prisoner["gender"],
-                        prisoner["nationality"],
-                        prisoner["citizen_id"],
-                        prisoner["hometown"],
-                        prisoner["offense_type"],
-                        prisoner["criminal_behaviors"]
-                    ))
+                return data
         except FileNotFoundError:
             messagebox.showerror("Lỗi", "Không tìm thấy file JSON!")
+            return []
         except json.JSONDecodeError:
             messagebox.showerror("Lỗi", "Lỗi khi đọc dữ liệu từ file JSON!")
+            return []
+
+    # Method to update TreeView with new data
+    def updateTreeView(self, data):
+        self.out.delete(*self.out.get_children())
+        for idx, prisoner in enumerate(data, start=1):
+            self.out.insert("", "end", values=(
+                idx,
+                prisoner["fullname"],
+                prisoner["date_of_birth"],
+                prisoner["gender"],
+                prisoner["nationality"],
+                prisoner["citizen_id"],
+                prisoner["hometown"],
+                prisoner["offense_type"],
+                prisoner["criminal_behaviors"]
+            ))
 
     # Method add data new prisoner to json file
     def addPrisonerJson(self, prisoner_data):
@@ -272,8 +274,8 @@ class AdminControls:
     """CTA Methods"""
     # Method to display all Prisoners in the Treeview Frame
     def viewPrisoners(self):
-        self.loadPrisonersJson()
-    
+        data = self.loadPrisonersJson()
+        self.updateTreeView(data)
     # Method to add new prisoner 
     def addPrisoner(self):
         if self.txtName.get() == "" or self.txtDOB.get() == "" or self.comboGender.get() == "" or self.txtNationality.get() == "" or self.txtCitizenID.get() == "" or self.txtHometown.get() == "" or self.comboOffenseType.get() == "" or self.txtCriminalBehavior.get("1.0","end-1c") == "":
@@ -411,6 +413,66 @@ class AdminControls:
             except json.JSONDecodeError:
                 messagebox.showerror("Lỗi", "Lỗi khi đọc dữ liệu từ file JSON!")
     
+    # Method to show sorting options using checkboxes
+    def showSortOptions(self):
+        sort_window = Toplevel(self.root)
+        sort_window.title("Sắp xếp danh sách phạm nhân")
+        sort_window.geometry("300x150")
+        sort_window.grab_set()  # Make this window modal
+
+        # Center the sort_window on the screen
+        self.center_window(sort_window, 300, 150)
+
+        sort_by_name = BooleanVar()
+        sort_by_dob = BooleanVar()
+
+        def apply_sort():
+            if sort_by_name.get() and sort_by_dob.get():
+                messagebox.showerror("Error", "Chọn một tiêu chí duy nhất để sắp xếp")
+            elif sort_by_name.get():
+                self.sortPrisoners("name")
+                sort_window.destroy()
+            elif sort_by_dob.get():
+                self.sortPrisoners("date_of_birth")
+                sort_window.destroy()
+            else:
+                messagebox.showerror("Error", "Chọn một tiêu chí để sắp xếp")
+
+        Label(sort_window, text="Chọn tiêu chí sắp xếp:", font=("Arial", 12, 'bold')).pack(pady=10)
+
+        Checkbutton(sort_window, text="Họ tên", variable=sort_by_name, font=("Arial", 12)).pack(anchor=W, padx=15,)
+        Checkbutton(sort_window, text="Ngày sinh", variable=sort_by_dob, font=("Arial", 12)).pack(anchor=W, padx=15)
+
+        Button(sort_window, text="Sắp xếp", command=apply_sort, bg=PRIMARY_COLOR, fg="white", font=("Arial", 12)).pack(pady=10)
+
+    # Method to sort prisoners based on the selected criterion
+    def sortPrisoners(self, criterion):
+        # Load prisoners from JSON file
+        prisoners = self.loadPrisonersJson()
+
+        # Sort prisoners based on the selected criterion
+        if criterion == "name":
+            sorted_prisoners = sorted(prisoners, key=lambda x: x["fullname"])
+        elif criterion == "date_of_birth":
+            sorted_prisoners = sorted(prisoners, key=lambda x: int(x["date_of_birth"].split('/')[-1]))
+
+        # Update TreeView with sorted prisoners
+        self.updateTreeView(sorted_prisoners)
+
+    # Method Sort Ascending Prisoners by Fullname or DOB
+    def sortAscPrisonersByNameOrDOB(self):
+        self.showSortOptions()
+
+    # Method to center a window on the screen
+    def center_window(self, window, width, height):
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+
+        x = (screen_width / 2) - (width / 2)
+        y = (screen_height / 2) - (height / 2)
+
+        window.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
+
     # Method to redirect to the login frame
     def logOut(self):
         confirm = messagebox.askokcancel("Xác nhận", "Bạn có chắc chắn muốn đăng xuất?")
@@ -469,11 +531,18 @@ class AdminControls:
                               activeforeground='#FFFFFF')
         self.btnViewLaws.grid(row=0, column=6, padx=10)
 
+        # Sort list Prisoners by Fullname or Date of birth
+        self.btnSort = Button(self.entriesFrame, command=self.sortAscPrisonersByNameOrDOB, text="Sắp xếp", bd=0, cursor="hand2",
+                                bg="#009999",   
+                                fg="white", width=7, font=("Arial", 15, 'bold'),
+                                activebackground="#007777",
+                                activeforeground='#FFFFFF')
+        self.btnSort.grid(row=0, column=3, padx=5, sticky="e")
 
         # Search prisoner by CMND/CCCD
         self.btnSearch = Button(self.entriesFrame, command=self.searchPrisonerByCitizenID, text="Tìm phạm nhân", bd=0, cursor="hand2",
                                 bg="#009999",   
-                                fg="white", width=14, font=("Arial", 15, 'bold'),
+                                fg="white", width=13, font=("Arial", 15, 'bold'),
                                 activebackground="#007777",
                                 activeforeground='#FFFFFF')
         self.btnSearch.grid(row=0, column=5, padx=15, sticky="e")
@@ -502,7 +571,7 @@ class AdminControls:
         # Formatting the output table view
         self.out = ttk.Treeview(self.tableFrame, yscrollcommand=self.yScroll.set,
                                 columns=(1, 2, 3, 4, 5, 6, 7, 8, 9), style="mystyle.Treeview")
-     
+        
         self.out.heading("1", text="STT")
         self.out.column("1", width=50, stretch=False)
         self.out.heading("2", text="Họ tên")

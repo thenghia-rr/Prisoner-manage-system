@@ -160,32 +160,35 @@ class UserControls:
             with open(file_json_prisoners, "r", encoding="utf-8") as file:
                 # Đọc dữ liệu từ file JSON
                 data = json.load(file)
-
-                # Xóa hết dữ liệu hiện tại trong Treeview
-                self.out.delete(*self.out.get_children())
-
-                # Hiển thị dữ liệu từ JSON lên Treeview
-                for idx, prisoner in enumerate(data, start=1):
-                    self.out.insert("", "end", values=(
-                        idx,
-                        prisoner["fullname"],
-                        prisoner["date_of_birth"],
-                        prisoner["gender"],
-                        prisoner["nationality"],
-                        prisoner["citizen_id"],
-                        prisoner["hometown"],
-                        prisoner["offense_type"],
-                        prisoner["criminal_behaviors"]
-                    ))
+                return data
         except FileNotFoundError:
             messagebox.showerror("Lỗi", "Không tìm thấy file JSON!")
+            return []
         except json.JSONDecodeError:
             messagebox.showerror("Lỗi", "Lỗi khi đọc dữ liệu từ file JSON!")
+            return []
+
+    # Method to update TreeView with new data
+    def updateTreeView(self, data):
+        self.out.delete(*self.out.get_children())
+        for idx, prisoner in enumerate(data, start=1):
+            self.out.insert("", "end", values=(
+                idx,
+                prisoner["fullname"],
+                prisoner["date_of_birth"],
+                prisoner["gender"],
+                prisoner["nationality"],
+                prisoner["citizen_id"],
+                prisoner["hometown"],
+                prisoner["offense_type"],
+                prisoner["criminal_behaviors"]
+            ))
 
     """CTA Methods"""
     # Method to display all Prisoners in the Treeview Frame
     def viewPrisoners(self):
-        self.loadPrisonersJson()
+        data = self.loadPrisonersJson()
+        self.updateTreeView(data)
 
      #  Method to refresh form Prisoner
     def resetForm(self):
@@ -234,6 +237,53 @@ class UserControls:
             except json.JSONDecodeError:
                 messagebox.showerror("Lỗi", "Lỗi khi đọc dữ liệu từ file JSON!")
 
+    # Method to show sorting options using checkboxes
+    def showSortOptions(self):
+        sort_window = Toplevel(self.root)
+        sort_window.title("Sắp xếp danh sách phạm nhân")
+        sort_window.geometry("300x150")
+        sort_window.grab_set()  # Make this window modal
+
+        sort_by_name = BooleanVar()
+        sort_by_dob = BooleanVar()
+
+        def apply_sort():
+            if sort_by_name.get() and sort_by_dob.get():
+                messagebox.showerror("Error", "Chọn một tiêu chí duy nhất để sắp xếp")
+            elif sort_by_name.get():
+                self.sortPrisoners("name")
+                sort_window.destroy()
+            elif sort_by_dob.get():
+                self.sortPrisoners("date_of_birth")
+                sort_window.destroy()
+            else:
+                messagebox.showerror("Error", "Chọn một tiêu chí để sắp xếp")
+
+        Label(sort_window, text="Chọn tiêu chí sắp xếp:", font=("Arial", 12, 'bold')).pack(pady=10)
+
+        Checkbutton(sort_window, text="Họ tên", variable=sort_by_name, font=("Arial", 12)).pack(anchor=W, padx=15,)
+        Checkbutton(sort_window, text="Ngày sinh", variable=sort_by_dob, font=("Arial", 12)).pack(anchor=W, padx=15)
+
+        Button(sort_window, text="Sắp xếp", command=apply_sort, bg=PRIMARY_COLOR, fg="white", font=("Arial", 12)).pack(pady=10)
+
+    # Method to sort prisoners based on the selected criterion
+    def sortPrisoners(self, criterion):
+        # Load prisoners from JSON file
+        prisoners = self.loadPrisonersJson()
+
+        # Sort prisoners based on the selected criterion
+        if criterion == "name":
+            sorted_prisoners = sorted(prisoners, key=lambda x: x["fullname"])
+        elif criterion == "date_of_birth":
+            sorted_prisoners = sorted(prisoners, key=lambda x: int(x["date_of_birth"].split('/')[-1]))
+
+        # Update TreeView with sorted prisoners
+        self.updateTreeView(sorted_prisoners)
+
+    # Method Sort Ascending Prisoners by Fullname or DOB
+    def sortAscPrisonersByNameOrDOB(self):
+        self.showSortOptions()
+
     # Method to redirect the frame for LAWS API
     def viewLaws(self):
         self.entriesFrame.destroy()
@@ -271,13 +321,21 @@ class UserControls:
                              fg="#5856a0", width=15, font=("Arial", 15, "bold"))
         self.btnRefresh.grid(row=0, column=1, padx=10)
 
-         # Search prisoner by CMND/CCCD
+        # Search prisoner by CMND/CCCD
         self.btnSearch = Button(self.buttonsFrame, command=self.searchPrisonerByCitizenID, text="Tìm phạm nhân", bd=0, cursor="hand2",
                                 bg="#009999",   
                                 fg="white", width=15, font=("Arial", 15, 'bold'),
                                 activebackground="#007777",
                                 activeforeground='#FFFFFF')
         self.btnSearch.grid(row=0, column=2, padx=15, sticky="e")
+
+        # Sort list Prisoners by Fullname or Date of birth
+        self.btnSort = Button(self.buttonsFrame, command=self.sortAscPrisonersByNameOrDOB, text="Sắp xếp", bd=0, cursor="hand2",
+                                bg="#009999",   
+                                fg="white", width=10, font=("Arial", 15, 'bold'),
+                                activebackground="#007777",
+                                activeforeground='#FFFFFF')
+        self.btnSort.grid(row=0, column=3, padx=15, sticky="e")
 
         # View Laws from API
         self.btnViewLaws = Button(self.buttonsFrame, command=self.viewLaws, text="Tham khảo luật", bd=0,
@@ -286,8 +344,9 @@ class UserControls:
                               fg="white", width=15, font=("Arial", 15, "bold"),
                               activebackground="#007777",
                               activeforeground='#FFFFFF')
-        self.btnViewLaws.grid(row=0, column=3, padx=10)
+        self.btnViewLaws.grid(row=0, column=4, padx=10)
 
+        
 
 
         # LogOut
