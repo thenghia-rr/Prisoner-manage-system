@@ -27,6 +27,11 @@ class Login:
         self.loginControlFrame()
 
     """CTA Methods"""
+    def bindEnterKey(self):
+        self.root.bind('<Return>', self.onEnterPress)
+
+    def onEnterPress(self, event):
+        self.loginFunc()
 
     # Login function to navigate to the next frames
     def loginFunc(self):
@@ -136,7 +141,7 @@ class Login:
         self.flagVN.image = img_flag_vn  # Giữ tham chiếu đến ảnh
         self.flagVN.grid(row=2, column=2, columnspan=2, padx=10, pady=9)
         
-        
+        self.bindEnterKey()
 
     """Register Frame"""
 
