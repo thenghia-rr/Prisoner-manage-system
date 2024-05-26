@@ -27,6 +27,11 @@ class Login:
         self.loginControlFrame()
 
     """CTA Methods"""
+    def bindEnterKey(self):
+        self.root.bind('<Return>', self.onEnterPress)
+
+    def onEnterPress(self, event):
+        self.loginFunc()
 
     # Login function to navigate to the next frames
     def loginFunc(self):
@@ -92,30 +97,30 @@ class Login:
     def loginControlFrame(self):
         self.loginFrame = Frame(self.root, bg="white")
         self.loginFrame.pack(side=LEFT, fill=X, padx=60)
-        self.login_frame_title = Label(self.loginFrame, text="WELCOME BACK", font=("Impact", 35), bg="white",
+        self.login_frame_title = Label(self.loginFrame, text="ĐĂNG NHẬP", font=("Tahoma", 33, 'bold'), bg="white",
                                        fg=PRIMARY_COLOR)
         self.login_frame_title.grid(row=0, columnspan=2, padx=10, pady=20, sticky="w")
 
-        self.labelUsername = Label(self.loginFrame, text="Username", font=("Tahoma", 14, "bold"), bg="white",
+        self.labelUsername = Label(self.loginFrame, text="Tên đăng nhập", font=("Tahoma", 14, "bold"), bg="white",
                                    fg=PRIMARY_COLOR)
         self.labelUsername.grid(row=1, column=0, padx=10, pady=5, sticky="w")
         self.txtUsername = Entry(self.loginFrame, textvariable=self.username, font=("Courier", 13), width=30,
                                  bd=5)
         self.txtUsername.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-        self.labelPassword = Label(self.loginFrame, text="Password", font=("Tahoma", 14, "bold"), bg="white",
+        self.labelPassword = Label(self.loginFrame, text="Mật khẩu", font=("Tahoma", 14, "bold"), bg="white",
                                    fg=PRIMARY_COLOR)
         self.labelPassword.grid(row=2, column=0, padx=10, pady=15, sticky="w")
         self.txtPassword = Entry(self.loginFrame, textvariable=self.password, font=("Courier", 13), width=30,
                                  bd=5, show="*")
         self.txtPassword.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-        self.btnLogin = Button(self.loginFrame, text="Login", bd=0, cursor="hand2",
-                               fg="white", bg=PRIMARY_COLOR, width=10, font=("Impact", 15), command=self.loginFunc)
+        self.btnLogin = Button(self.loginFrame, text="Đăng nhập", bd=0, cursor="hand2",
+                               fg="white", bg=PRIMARY_COLOR, width=10, font=("Tahoma", 15,'bold'), command=self.loginFunc)
         self.btnLogin.grid(row=3, column=1, padx=10, pady=5, sticky="e")
 
-        self.btnRegister = Button(self.loginFrame, text="Register", bd=0, cursor="hand2",
-                                  fg="white", bg=PRIMARY_COLOR, width=10, font=("Impact", 15), command=self.registerControlFrame)
+        self.btnRegister = Button(self.loginFrame, text="Đăng kí", bd=0, cursor="hand2",
+                                  fg="white", bg=PRIMARY_COLOR, width=10, font=("Tahoma", 15, 'bold'), command=self.registerControlFrame)
         self.btnRegister.grid(row=3, column=0, padx=10, pady=5, sticky="w")
 
         self.rightFrame = Frame(self.root, bg=PRIMARY_COLOR)
@@ -136,7 +141,7 @@ class Login:
         self.flagVN.image = img_flag_vn  # Giữ tham chiếu đến ảnh
         self.flagVN.grid(row=2, column=2, columnspan=2, padx=10, pady=9)
         
-        
+        self.bindEnterKey()
 
     """Register Frame"""
 
@@ -147,34 +152,34 @@ class Login:
         self.registerFrame = Frame(self.root, bg="white")
         self.registerFrame.pack(side=LEFT, fill=X, padx=60)
 
-        self.register_frame_title = Label(self.registerFrame, text="REGISTER ACCOUNT", font=("Impact", 30), bg="white",
+        self.register_frame_title = Label(self.registerFrame, text="ĐĂNG KÍ", font=("Tahoma", 30, 'bold'), bg="white",
                                           fg=PRIMARY_COLOR)
         self.register_frame_title.grid(row=0, columnspan=2, padx=10, pady=20, sticky="w")
 
-        self.labelRegUsername = Label(self.registerFrame, text="Username", font=("Tahoma", 14, "bold"), bg="white",
+        self.labelRegUsername = Label(self.registerFrame, text="Tên đăng nhập", font=("Tahoma", 14, "bold"), bg="white",
                                       fg=PRIMARY_COLOR)
         self.labelRegUsername.grid(row=1, column=0, padx=10, pady=5, sticky="w")
         self.regUsername = Entry(self.registerFrame, font=("Courier", 13), width=30, bd=5)
         self.regUsername.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-        self.labelRegPassword = Label(self.registerFrame, text="Password", font=("Tahoma", 14, "bold"), bg="white",
+        self.labelRegPassword = Label(self.registerFrame, text="Mật khẩu", font=("Tahoma", 14, "bold"), bg="white",
                                       fg=PRIMARY_COLOR)
         self.labelRegPassword.grid(row=2, column=0, padx=10, pady=5, sticky="w")
         self.regPassword = Entry(self.registerFrame, font=("Courier", 13), width=30, bd=5, show="*")
         self.regPassword.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-        self.labelRegRePassword = Label(self.registerFrame, text="Re-Password", font=("Tahoma", 14, "bold"), bg="white",
+        self.labelRegRePassword = Label(self.registerFrame, text="Nhập lại MK", font=("Tahoma", 14, "bold"), bg="white",
                                         fg=PRIMARY_COLOR)
         self.labelRegRePassword.grid(row=3, column=0, padx=10, pady=5, sticky="w")
         self.regRePassword = Entry(self.registerFrame, font=("Courier", 13), width=30, bd=5, show="*")
         self.regRePassword.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
-        self.btnCreateAccount = Button(self.registerFrame, text="Create Account", bd=0, cursor="hand2",
-                                       fg="white", bg=PRIMARY_COLOR, width=15, font=("Impact", 15), command=self.registerFunc)
+        self.btnCreateAccount = Button(self.registerFrame, text="Tạo tài khoản", bd=0, cursor="hand2",
+                                       fg="white", bg=PRIMARY_COLOR, width=15, font=("Tahoma", 15), command=self.registerFunc)
         self.btnCreateAccount.grid(row=4, column=1, padx=10, pady=10, sticky="e")
 
-        self.btnBackToLogin = Button(self.registerFrame, text="Back to Login", bd=0, cursor="hand2",
-                                     fg="white", bg=PRIMARY_COLOR, width=15, font=("Impact", 15), command=self.backToLogin)
+        self.btnBackToLogin = Button(self.registerFrame, text="Đăng nhập", bd=0, cursor="hand2",
+                                     fg="white", bg=PRIMARY_COLOR, width=15, font=("Tahoma", 15), command=self.backToLogin)
         self.btnBackToLogin.grid(row=4, column=0, padx=10, pady=10, sticky="w")
 
         self.rightFrame = Frame(self.root, bg=PRIMARY_COLOR)

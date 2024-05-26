@@ -114,9 +114,10 @@ class AdminControls:
         self.labelOffenseType.grid(row=4, column=0, padx=10, pady=5, sticky="w")
         self.comboOffenseType = ttk.Combobox(self.entriesFrame, textvariable=self.offense_type, font=("Calibri", 14),
                                         width=28,
+                                        state='readonly'
                                         )
 
-        self.comboOffenseType['values'] = ("Hình sự", "Dân sự", "Hành chính","Lao động", "Thuế", "Doanh nghiệp" ,'khác')
+        self.comboOffenseType['values'] = ("Hình sự", "Dân sự", "Hành chính","Lao động", "Thuế", "Doanh nghiệp" ,'Khác')
         self.comboOffenseType.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
          # Prisoner Criminal behaviors
@@ -159,14 +160,29 @@ class AdminControls:
         # Chèn nội dung mới vào Text widget
         self.txtCriminalBehavior.insert('1.0', criminal_behaviors_value)
 
+    #  Validate tên phạm nhân
+    def validateFullname(self, name):
+        return isinstance(name, str)
 
-     # Validate length of citizen ID
+    def validateDOB(self, dob):
+        return isinstance(dob, str)
+
+    def validateNationality(self, national):
+        return isinstance(national, str)
+
+    def validateHometown(self, hometown):
+        return isinstance(hometown, str)
+
+    def validateCriminalBehavior(self,behaviors):
+        return isinstance(behaviors,str)
+
+    # Validate length of citizen ID
     def validateCitizenID(self, citizen_id):
-        # Kiểm tra xem độ dài của số CCCD/CMND có ít nhất 12 ký tự không
-        if len(citizen_id) < 12:
-            return False
-        else:
+        # Kiểm tra xem độ dài của số CCCD/CMND có bằng 12 ký tự không
+        if len(citizen_id) == 12:
             return True
+        else:
+            return False
     """ All method to manipulations with file json """
     # Method auto update ID after have manipulation changed ID 
     def updateIDsAfterDeletion(self, deleted_id):
@@ -276,6 +292,7 @@ class AdminControls:
     def viewPrisoners(self):
         data = self.loadPrisonersJson()
         self.updateTreeView(data)
+
     # Method to add new prisoner 
     def addPrisoner(self):
         if self.txtName.get() == "" or self.txtDOB.get() == "" or self.comboGender.get() == "" or self.txtNationality.get() == "" or self.txtCitizenID.get() == "" or self.txtHometown.get() == "" or self.comboOffenseType.get() == "" or self.txtCriminalBehavior.get("1.0","end-1c") == "":
@@ -284,7 +301,32 @@ class AdminControls:
 
         # Kiểm tra độ dài của số CCCD/CMND
         if not self.validateCitizenID(self.txtCitizenID.get()):
-            messagebox.showerror("Lỗi!", "Số CCCD/CMND phải có ít nhất 12 ký tự!")
+            messagebox.showerror("Lỗi!", "Số CCCD/CMND phải có chiều dài bằng 12 số!")
+            return
+
+        # Kiểm tra họ tên phải là chuỗi
+        if self.validateFullname(self.txtName.get()) == False:
+            messagebox.showerror("Lỗi!", "Họ tên phải là kiểu chuỗi")
+            return
+
+        # Kiểm tra ngày sinh
+        if not self.validateDOB(self.txtDOB.get()):
+            messagebox.showerror("Lỗi!", "Ngày sinh phải là định dạng: DD/MM/YYYY")
+            return
+
+        # Kiểm tra quốc tịch
+        if not self.validateNationality(self.txtNationality.get()):
+            messagebox.showerror("Lỗi!", "Quốc tịch phải là kiểu chuỗi !")
+            return
+
+        # Kiểm tra quê quán
+        if not self.validateHometown(self.txtHometown.get()):
+            messagebox.showerror("Lỗi!", "Quê quán phải là kiểu chuỗi !")
+            return
+
+        # Kiểm tra hành vi phạm tội
+        if not self.validateHometown(self.txtCriminalBehavior.get("1.0","end-1c")):
+            messagebox.showerror("Lỗi!", "Hành vi phạm tội phải là kiểu chuỗi !")
             return
 
         prisoner_data = {
@@ -308,6 +350,40 @@ class AdminControls:
         # Kiểm tra xem có phạm nhân nào được chọn không
         if not self.out.selection():
             messagebox.showwarning("Cảnh báo", "Vui lòng chọn phạm nhân để cập nhật thông tin!")
+            return
+
+        if self.txtName.get() == "" or self.txtDOB.get() == "" or self.comboGender.get() == "" or self.txtNationality.get() == "" or self.txtCitizenID.get() == "" or self.txtHometown.get() == "" or self.comboOffenseType.get() == "" or self.txtCriminalBehavior.get("1.0","end-1c") == "":
+            messagebox.showerror("Lỗi!", "Vui lòng nhập đủ thông tin!")
+            return
+
+        # Kiểm tra độ dài của số CCCD/CMND
+        if not self.validateCitizenID(self.txtCitizenID.get()):
+            messagebox.showerror("Lỗi!", "Số CCCD/CMND phải có chiều dài bằng 12 số!")
+            return
+
+        # Kiểm tra họ tên phải là chuỗi
+        if not self.validateFullname(self.txtName.get()):
+            messagebox.showerror("Lỗi!", "Họ tên phải là kiểu chuỗi")
+            return
+
+        # Kiểm tra ngày sinh
+        if not self.validateDOB(self.txtDOB.get()):
+            messagebox.showerror("Lỗi!", "Ngày sinh phải là định dạng: DD/MM/YYYY")
+            return
+
+        # Kiểm tra quốc tịch
+        if not self.validateNationality(self.txtNationality.get()):
+            messagebox.showerror("Lỗi!", "Quốc tịch phải là kiểu chuỗi !")
+            return
+
+        # Kiểm tra quê quán
+        if not self.validateHometown(self.txtHometown.get()):
+            messagebox.showerror("Lỗi!", "Quê quán phải là kiểu chuỗi !")
+            return
+
+        # Kiểm tra hành vi phạm tội
+        if not self.validateHometown(self.txtCriminalBehavior.get()):
+            messagebox.showerror("Lỗi!", "Hành vi phạm tội phải là kiểu chuỗi !")
             return
 
         # Lấy ID của phạm nhân được chọn
@@ -339,6 +415,7 @@ class AdminControls:
 
     # Method to delete selected Prisoner
     def deletePrionser(self):
+
         # Kiểm tra xem có phạm nhân nào được chọn không
         if not self.out.selection():
             messagebox.showwarning("Cảnh báo", "Vui lòng chọn phạm nhân để xóa!")
@@ -348,16 +425,23 @@ class AdminControls:
         selected_item = self.out.selection()[0]
         prisoner_id = self.out.item(selected_item, 'values')[0]
 
-        try:
-            self.deletePrisonerJson(prisoner_id)
+        ok = messagebox.askokcancel('Confirm delete', 'Bạn chắc chắc muốn xóa?')
+        if ok:
+            try:
+                self.deletePrisonerJson(prisoner_id)
 
-            messagebox.showinfo("Thông báo", "Xóa phạm nhân thành công!")
+                messagebox.showinfo("Thông báo", "Xóa phạm nhân thành công!")
 
-            # Cập nhật giao diện, load lại danh sách phạm nhân
-            self.viewPrisoners()
-        except Exception as e:
-            messagebox.showerror("Lỗi", f"Lỗi khi xóa thông tin phạm nhân: {str(e)}") 
+                # Cập nhật giao diện, load lại danh sách phạm nhân
+                self.viewPrisoners()
+
+                # Làm mới form thông tin phạm nhân
+                self.resetForm()
+            except Exception as e:
+                messagebox.showerror("Lỗi", f"Lỗi khi xóa thông tin phạm nhân: {str(e)}") 
         
+
+
     #  Method to refresh form Prisoner
     def resetForm(self):
         self.txtName.delete(0, END)
