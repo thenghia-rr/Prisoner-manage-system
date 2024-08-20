@@ -1,9 +1,5 @@
 # ĐỒ ÁN KẾT THÚC MÔN LẬP TRÌNH PYTHON
 - Đề tài: Hệ thống quản lí phạm nhân
-- GVHD: Đinh Nguyễn Trọng Nghĩa
-- Thành viên nhóm:
-1. Đặng Thế Nghĩa - 2001223025
-2. Phạm Nguyễn Ngọc Cường - 2001220471
 
 ## Công nghệ sử dụng (Tech stack)
 1. Tkinter - Python
@@ -41,7 +37,7 @@ thông tin chi tiết từng luật từ API, lưu luật vào file json
 * Có 2 cách: 
 1. Mở trực tiếp chương trình trong file main.py
 - Yêu cầu: Máy tính có cài python, tkinter.
-2. Mở thư mục Prisoner_manage_system_App, tìm file App.exe và run
+2. Mở thư mục Prisoner_manage_system_App, tìm file main.exe và run
 
 ## Tham khảo (References)
 1. [Docs official Tkinter](https://docs.python.org/3/library/tkinter.html)
